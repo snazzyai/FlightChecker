@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Check your Flights</string>
+    <string name="search_hint">Enter Destination Airport</string>
+</resources>
