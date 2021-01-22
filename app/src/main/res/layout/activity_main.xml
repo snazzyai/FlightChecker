@@ -16,6 +16,7 @@
         android:textSize="25sp"
         android:layout_marginBottom="10dp"
         android:textStyle="bold"
+        android:textColor="@color/purple_500"
         />
     <EditText
         android:layout_width="match_parent"
@@ -31,30 +32,45 @@
         android:layout_gravity="left"
         android:text="Search"
         android:onClick="searchAirlines"
+        android:textColor="#fff"
+        android:background="@color/purple_500"
         tools:ignore="InvalidId" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/layoutLoading">
+        <TextView
+            android:layout_width="match_parent"
+            android:id="@+id/loadingText"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:padding="10dp"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal"
+            />
+    </LinearLayout>
+
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Airports"
         android:textSize="20sp"
         android:layout_marginTop="10dp"
+        android:textStyle="bold"
         android:padding="10dp" />
 
 
-    <LinearLayout
-        android:layout_width="380dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-
-        >
-        <include
-            layout="@layout/layout_airports_list"
-             />
-
-    </LinearLayout>
-
-
-
-
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:clipToPadding="false"
+            android:id="@+id/recyclerView"
+            android:background="@color/backgroundColor"
+            />
 
 </LinearLayout>

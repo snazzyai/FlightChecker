@@ -1,123 +1,62 @@
 package com.kotlinattestation.flightchecker
 
-import android.content.ContentValues
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
+import android.widget.AdapterView
 import android.widget.Toast
-import data.RequestApi
-import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileReader
+import com.kotlinattestation.flightchecker.db.DatabaseHelper
+import kotlinx.android.synthetic.main.activity_main.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.kotlinattestation.flightchecker.db.DatabaseInserter
+import com.kotlinattestation.flightchecker.db.DatabaseSearcher
+import com.kotlinattestation.flightchecker.ui.FlightsActivity
+
 import java.lang.Exception
 
 
-class MainActivity : AppCompatActivity() {
-    var url = "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat"
+
+
+class MainActivity : Activity() {
+    private val TAG = "Test"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        getAllAirports()
-        getAllAirlines()
-        getAllRoutes()
-    }
-
-    private fun getAllAirlines() {
-        TODO("Not yet implemented")
-    }
-
-    private fun getAllRoutes() {
-        TODO("Not yet implemented")
-    }
-
-
-    fun getAllAirports(){
-        var helper = DatabaseHelper(applicationContext)
-        var db = helper.readableDatabase
-        try{
-            var rq = db.rawQuery("SELECT * FROM AIRPORTS",null)
-            Log.d("response", rq.toString())
-            if(rq.moveToNext()){
-                Toast.makeText(applicationContext,rq.getString(1), Toast.LENGTH_SHORT).show()
-            }
-            else{
-
-                Toast.makeText(applicationContext,"no data, will now fetch from api", Toast.LENGTH_SHORT).show()
-                getAndStoreAirport()
-
-            }
-        }
-        catch(e: Exception){
-            Toast.makeText(applicationContext,"not found in db", Toast.LENGTH_SHORT).show()
-        }
+//        getAllAirports()
+        runStartup()
 
     }
 
-//coroutine for api call async
-    fun getAndStoreAirport(){
-        try{
-            CoroutineScope(IO).launch {
-                val result = async {
-                    storeAirportsData()
-                }.await()
-            }
-        }
-        catch (e: Exception) {
-            Log.e("Request", "Error ", e);
-        }
-    }
 
-//   insertAirports to airports table
-    fun insertAirports(splitted: List<String>){
-        var helper = DatabaseHelper(applicationContext)
-        var db = helper.writableDatabase
-        var cv = ContentValues()
-        cv.put("AIRPORTID", splitted[0].toInt())
-        cv.put("NAME", splitted[1].toString())
-        cv.put("CITY", splitted[2].toString())
-        cv.put("COUNTRY", splitted[3].toString())
-        cv.put("IATA", splitted[4].toString())
-        cv.put("ICAO", splitted[5].toString())
-        cv.put("LATITUDE", splitted[6].toString())
-        cv.put("LONGITUDE", splitted[7].toString())
-        cv.put("ALTITUDE", splitted[8].toString())
-        cv.put("TIMEZONE", splitted[9].toString())
-        cv.put("DST", splitted[10].toString())
-        cv.put("DTZ", splitted[11].toString())
-        cv.put("TYPE", splitted[12].toString())
-        cv.put("SOURCE", splitted[13].toString())
-        db?.insert("AIRPORTS",null, cv)
-        db?.close()
-//    Toast.makeText(applicationContext,"finished inserting data!", Toast.LENGTH_SHORT).show()
+    fun runStartup(){
+        val airportsList = DatabaseInserter(this).getAirportsData(this)
 
-    }
-
-    //get airports data and insert into airports table
-    suspend fun storeAirportsData(){
-        var request = RequestApi(url)
-        var result = request.makeRequest()
-        if(result !== null){
-            var final = result.toString().lines()
-            Log.d("dump", final[0])
-
-            for(i in final){
-                var splitted = i.split(",")
-                insertAirports(splitted)
-            }
-            getAllAirports()
+        if(airportsList.isEmpty()){
+            btnSearch.setEnabled(false)
+            loadingText.setText("First time Database insertion..Please Wait..")
+            DatabaseInserter(this).storeAirportsData()
         }
         else{
-            throw CancellationException("Api not gotten!")
+            recyclerView.adapter = AirportsAdapter(airportsList)
+            recyclerView.layoutManager = LinearLayoutManager(this)
+            recyclerView.setHasFixedSize(true)
         }
+
     }
 
 
-    fun searchAirlines(){
-
+    fun searchAirlines(view: View?){
+        if(etAirport.text.toString().isNotEmpty()){
+            val intent = Intent(this, FlightsActivity::class.java)
+            val text = etAirport.text
+            intent.putExtra("airport", text.toString())
+            startActivity(intent)
+        }
+        else{
+            Toast.makeText(this, "Nothing has been entered", Toast.LENGTH_LONG).show()
+        }
 
     }
 
