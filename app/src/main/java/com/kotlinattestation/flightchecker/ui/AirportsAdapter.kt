@@ -3,15 +3,19 @@ package com.kotlinattestation.flightchecker
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.kotlinattestation.flightchecker.models.Airports
 import kotlinx.android.synthetic.main.layout_airports_list.view.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 
-class AirportsAdapter(private val airportsData: List<Airports>): RecyclerView.Adapter<AirportsAdapter.AirportsViewHolder>() {
+class AirportsAdapter(private val airportsData: ArrayList<Airports>): RecyclerView.Adapter<AirportsAdapter.AirportsViewHolder>() {
 
-    
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AirportsViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.layout_airports_list, parent, false)
 
@@ -20,8 +24,12 @@ class AirportsAdapter(private val airportsData: List<Airports>): RecyclerView.Ad
 
     override fun onBindViewHolder(holder: AirportsViewHolder, position: Int) {
         val currentItem = airportsData[position]
+
         holder.textViewName.setText(currentItem.airportName?.replace("\"",""))
         holder.textViewCountry.setText(currentItem.airportCountry?.replace("\"",""))
+
+
+
     }
 
     override fun getItemCount() = airportsData.size

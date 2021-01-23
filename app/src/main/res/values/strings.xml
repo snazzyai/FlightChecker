@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Check your Flights</string>
+    <string name="app_name">Flight Checker</string>
     <string name="search_hint">Enter Destination Airport</string>
     <string name="title_activity_maps">Map</string>
     <string name="loadingText"></string>

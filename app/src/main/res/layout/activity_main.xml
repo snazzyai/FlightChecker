@@ -25,6 +25,7 @@
         android:hint="@string/search_hint"
         android:id="@+id/etAirport"
         />
+
     <Button
         android:id="@+id/btnSearch"
         android:layout_width="match_parent"

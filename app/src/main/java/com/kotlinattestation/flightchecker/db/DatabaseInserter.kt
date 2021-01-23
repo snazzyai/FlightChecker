@@ -3,6 +3,7 @@ package com.kotlinattestation.flightchecker.db
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import com.kotlinattestation.flightchecker.MainActivity
 import com.kotlinattestation.flightchecker.models.Airports
@@ -26,6 +27,8 @@ open class DatabaseInserter(var ctx: MainActivity): Activity(){
            }.await()
         }
     }
+
+
 
 
     //get airports data and insert into airports table
@@ -113,7 +116,7 @@ open class DatabaseInserter(var ctx: MainActivity): Activity(){
             }
         }
         Log.d(TAG, "finished inserting routes data!! success")
-        System.exit(0)
+        ctx.triggerRestart(ctx)
     }
 
     private fun insertRoutes(splitted: List<String>) {
@@ -135,7 +138,7 @@ open class DatabaseInserter(var ctx: MainActivity): Activity(){
 
 
 
-    fun getAirportsData(ctx: Context): List<Airports>{
+    fun getAirportsData(ctx: Context): ArrayList<Airports>{
         val query = "SELECT NAME,COUNTRY FROM AIRPORTS"
         val db = DatabaseHelper(ctx).readableDatabase
         val cursor = db.rawQuery(query, null)
