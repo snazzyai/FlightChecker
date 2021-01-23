@@ -1,45 +1,37 @@
 package com.kotlinattestation.flightchecker.db
 
 import android.app.Activity
-import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import com.kotlinattestation.flightchecker.MainActivity
-import data.RequestApi
-import kotlinx.coroutines.*
-
 import com.kotlinattestation.flightchecker.models.Airports
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import java.net.URL
 
-open class DatabaseInserter(var ctx: MainActivity): Activity(){
 
+open class DatabaseInserter(var ctx: MainActivity): Activity(){
     private val urlAirport = "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat"
     private val urlAirline = "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airlines.dat"
     private val urlRoutes = "https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat"
-//    private val url = "https://jsonplaceholder.typicode.com/todos/1"
-    public var loaded: Boolean = false
     private var TAG = "airports"
 
 
     fun storeAirportsData(){
-       Log.d(TAG, "api function working")
+        Log.d(TAG,"now in coroutine")
         CoroutineScope(IO).launch(Dispatchers.Default){
            async {
                getAirportsDataFromApi()
            }.await()
-
         }
     }
 
 
-
     //get airports data and insert into airports table
     fun getAirportsDataFromApi() {
-        Log.d(TAG, "now getting airports from api")
+
+        Log.d(TAG, "now inserting airports")
         val result = URL(urlAirport).readText()
         val final = result.lines()
         for(i in final){
@@ -48,7 +40,7 @@ open class DatabaseInserter(var ctx: MainActivity): Activity(){
                 insertAirports(splitted)
             }
         }
-        Log.d(TAG, "next thing to do")
+        Log.d(TAG, "Finished Inserting")
         getAirlinesDataFromApi()
     }
 
@@ -72,7 +64,7 @@ open class DatabaseInserter(var ctx: MainActivity): Activity(){
         cv.put("DTZ", splitted[11])
         cv.put("TYPE", splitted[12])
         cv.put("SOURCE", splitted[13])
-        db?.insert("AIRPORTS",null, cv)
+        db?.insert("AIRPORTS", null, cv)
         db?.close()
     }
 
@@ -90,7 +82,6 @@ open class DatabaseInserter(var ctx: MainActivity): Activity(){
         }
         Log.d(TAG, "finished inserting airlines data!! success")
         getRoutesFromApi()
-
     }
 
     private fun insertAirlines(splitted: List<String>){
@@ -105,14 +96,14 @@ open class DatabaseInserter(var ctx: MainActivity): Activity(){
         cv.put("CALLSIGN", splitted[5])
         cv.put("COUNTRY", splitted[6])
         cv.put("ACTIVE", splitted[7])
-        db?.insert("AIRLINES",null, cv)
+        db?.insert("AIRLINES", null, cv)
         db?.close()
     }
 
 
 
     private fun getRoutesFromApi() {
-        Log.d(TAG, "now getting from api")
+       Log.d("routes", "now inserting routes")
         val result = URL(urlRoutes).readText()
         val final = result.lines()
         for(i in final){
@@ -122,12 +113,7 @@ open class DatabaseInserter(var ctx: MainActivity): Activity(){
             }
         }
         Log.d(TAG, "finished inserting routes data!! success")
-        //Call reload from Main Activity
-//        MainActivity().refreshMain()
-        layoutLoading.removeView(loadingText)
-        btnSearch.setEnabled(true)
-        MainActivity().runStartup()
-
+        System.exit(0)
     }
 
     private fun insertRoutes(splitted: List<String>) {
@@ -143,14 +129,14 @@ open class DatabaseInserter(var ctx: MainActivity): Activity(){
         cv.put("CODESHARE", splitted[6])
         cv.put("STOPS", splitted[7])
         cv.put("EQUIPMENT", splitted[7])
-        db?.insert("ROUTES",null, cv)
+        db?.insert("ROUTES", null, cv)
         db?.close()
     }
 
 
 
     fun getAirportsData(ctx: Context): List<Airports>{
-        val query = "SELECT NAME,COUNTRY FROM AIRPORTS LIMIT 20"
+        val query = "SELECT NAME,COUNTRY FROM AIRPORTS"
         val db = DatabaseHelper(ctx).readableDatabase
         val cursor = db.rawQuery(query, null)
         val airports = ArrayList<Airports>()

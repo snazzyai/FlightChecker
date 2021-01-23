@@ -1,33 +1,56 @@
-package com.kotlinattestation.flightchecker.ui
+package com.kotlinattestation.flightchecker
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-
+import android.util.Log
+import android.widget.Toast
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.kotlinattestation.flightchecker.R
-import com.kotlinattestation.flightchecker.databinding.ActivityMapsBinding
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
-    private lateinit var binding: ActivityMapsBinding
+    private lateinit var mMap2: GoogleMap
+    private var sourceLatitude = 0.0
+    private var sourceLongitude = 0.0
+    private var destinationLatitude = 0.0
+    private var destinationLongitude = 0.0
+    private var sourceAirport = ""
+    private var destinationAirport = ""
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMapsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        sourceLatitude = intent.getStringExtra("sourceLatitude").toDouble()
+        sourceLongitude = intent.getStringExtra("sourceLongitude").toDouble()
+        destinationLatitude = intent.getStringExtra("destinationLatitude").toDouble()
+        destinationLongitude = intent.getStringExtra("destinationLongitude").toDouble()
+        sourceAirport = intent.getStringExtra("sourceAirport")
+        destinationAirport = intent.getStringExtra("destinationAirport")
 
+        Log.d("map", sourceAirport)
+        Log.d("map",destinationAirport)
+
+
+
+        setContentView(R.layout.activity_maps_layout)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
-                .findFragmentById(R.id.map) as SupportMapFragment
+            .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+
     }
+
+
 
     /**
      * Manipulates the map once available.
@@ -41,14 +64,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
 
         mMap = googleMap
+        mMap2 = googleMap
 
-        // Add a marker in Sydney and move the camera
-        val source = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(source).title("SourceAirport"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(source))
+        if((destinationLatitude == 0.0 && destinationLongitude == 0.0) || (sourceLatitude == 0.0 && sourceLongitude == 0.0)){
+            Toast.makeText(this, "Invalid latitude and longitude", Toast.LENGTH_LONG).show()
+        }else{
+            val source = LatLng(sourceLatitude, sourceLongitude)
+            mMap2.addMarker(MarkerOptions().position(source).title(sourceAirport))
+            mMap2.moveCamera(CameraUpdateFactory.newLatLng(source))
+            val destination = LatLng(destinationLatitude, destinationLongitude)
+            mMap.addMarker(MarkerOptions().position(destination).title(destinationAirport))
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(destination))
 
-        val destination = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(destination).title("DestinationAirport"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(destination))
+        }
     }
 }

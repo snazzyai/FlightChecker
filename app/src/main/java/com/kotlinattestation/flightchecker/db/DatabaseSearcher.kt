@@ -4,27 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.database.SQLException
 import android.util.Log
-import com.kotlinattestation.flightchecker.models.Airports
 import com.kotlinattestation.flightchecker.models.Routes
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 
 class DatabaseSearcher(private val ctx: Context): Activity() {
     private var TAG = "cursor"
     var flights = ArrayList<Routes>()
-
-
-//
-//    fun searchFlights(airportName: String){
-//        CoroutineScope(Dispatchers.IO).launch(Dispatchers.Default){
-//            async {
-//                searchAirportId(airportName)
-//            }.await()
-//        }
-//    }
 
     fun searchAirportId(airportName: String): String{
         val input = "\"" + "$airportName" + "\""
@@ -48,6 +33,8 @@ class DatabaseSearcher(private val ctx: Context): Activity() {
 
 
 
+
+
     fun getAirlineDetails(airlineId: String): String? {
         var result: String? = ""
         val db = DatabaseHelper(ctx).writableDatabase
@@ -68,33 +55,14 @@ class DatabaseSearcher(private val ctx: Context): Activity() {
     }
 
 
-    fun getAirportDetails(airportId: String): String?{
+    fun getAirportDetails(airportId: String, position: Int): String?{
         var result: String? = ""
         val db = DatabaseHelper(ctx).writableDatabase
         val selectQuery = "SELECT * FROM AIRPORTS WHERE AIRPORTID = ?"
         try{
             db.rawQuery(selectQuery, arrayOf(airportId)).use {
                 if (it.moveToFirst()) {
-                    result = it.getString(1)
-                }else{
-                    Log.d(TAG, "Does not exist")
-                }
-            }
-        }catch (e: SQLException){
-            Log.d("errordb", e.toString())
-        }
-
-        return result
-    }
-
-    fun getCountry(airportId: String): String? {
-        var result: String? = ""
-        val db = DatabaseHelper(ctx).writableDatabase
-        val selectQuery = "SELECT * FROM AIRPORTS WHERE AIRPORTID = ?"
-        try{
-            db.rawQuery(selectQuery, arrayOf(airportId)).use {
-                if (it.moveToFirst()) {
-                    result = it.getString(3)
+                    result = it.getString(position)
                 }else{
                     Log.d(TAG, "Does not exist")
                 }
@@ -120,14 +88,17 @@ class DatabaseSearcher(private val ctx: Context): Activity() {
 
 
                         val sourceAirportId = it.getString(it.getColumnIndex("SOURCEAIRPORTID"))
-                        flightData.sourceAirport = getAirportDetails(sourceAirportId)
-                        flightData.sourceCountry = getCountry(sourceAirportId)
+                        flightData.sourceAirport = getAirportDetails(sourceAirportId ,1)
+                        flightData.sourceCountry = getAirportDetails(sourceAirportId, 3)
+                        flightData.sourceLatitude = getAirportDetails(sourceAirportId,6)
+                        flightData.sourceLongitude = getAirportDetails(sourceAirportId,7)
 
 
                         val destinationAirportId = it.getString(it.getColumnIndex("DESTINATIONAIRPORTID"))
-                        flightData.destinationAirport = getAirportDetails(destinationAirportId)
-
-                        flightData.destinationCountry = getCountry(destinationAirportId)
+                        flightData.destinationAirport = getAirportDetails(destinationAirportId, 1)
+                        flightData.destinationCountry = getAirportDetails(destinationAirportId, 3)
+                        flightData.destinationLatitude = getAirportDetails(destinationAirportId,6)
+                        flightData.destinationLongitude = getAirportDetails(destinationAirportId,7)
 
                         flights.add(flightData)
                     }

@@ -23,24 +23,54 @@
         android:paddingBottom="5dp"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/airportName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="2dp"
-            android:text="another something"
-            android:textSize="16sp"
-            android:textStyle="bold" />
 
-        <TextView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/airportCountry"
-            android:textSize="14sp"
+            android:layout_height="50dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp" >
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginTop="10dp"
-            android:padding="2dp"
-            android:text="something"
-            />
+            android:src="@drawable/flight" />
+            <TextView
+                android:id="@+id/airportName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="2dp"
+                android:text="another something"
+                android:layout_marginLeft="45dp"
+                android:layout_marginTop="10dp"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp" >
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/world" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/airportCountry"
+                android:textSize="14sp"
+
+                android:layout_marginLeft="45dp"
+                android:layout_marginTop="10dp"
+                android:padding="2dp"
+                android:text="something"
+                />
+        </RelativeLayout>
+
+
     </LinearLayout>
     
 
